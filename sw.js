@@ -1,4 +1,4 @@
-const CACHE_NAME = 'word-game-v4';
+const CACHE_NAME = 'word-game-v5';
 const urlsToCache = [
   './',
   './index.html',

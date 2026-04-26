@@ -91,9 +91,9 @@
   .screen { display: none; flex-direction: column; flex: 1; min-height: 0; }
   .screen.active { display: flex; animation: fadeIn 0.4s ease; }
   
-  /* 게임 화면 - 빈 공간을 보기/입력창이 채우도록 */
-  #screen-quiz .choices { flex: 1; align-content: stretch; }
-  #screen-quiz .choices .choice { flex: 1; min-height: 50px; }
+  /* 게임 화면 - 보기는 적당한 사이즈로 고정 */
+  #screen-quiz .choices { gap: 8px; }
+  #screen-quiz .choices .choice { min-height: auto; }
   
   /* 모바일 (430px 이하 - 아이폰 15 Pro Max 포함) 화면 대응 */
   @media (max-width: 430px) {
@@ -180,15 +180,15 @@
     .progress-bar { height: 6px; margin-bottom: 8px; }
     
     /* 질문 카드 압축 */
-    .question-card { padding: 14px 12px; margin-bottom: 8px; border-radius: 18px; border-width: 3px; }
-    .question-card .label { font-size: 0.75rem; margin-bottom: 4px; }
-    .question-word { font-size: 1.7rem; }
-    .pronunciation { font-size: 0.8rem; margin-top: 3px; }
+    .question-card { padding: 10px 12px; margin-bottom: 8px; border-radius: 16px; border-width: 2px; }
+    .question-card .label { font-size: 0.7rem; margin-bottom: 2px; }
+    .question-word { font-size: 1.5rem; }
+    .pronunciation { font-size: 0.75rem; margin-top: 2px; }
     
     /* 4지선다 보기 압축 */
-    .choices { gap: 6px; flex: 1; }
-    .choice { padding: 9px 10px; font-size: 0.92rem; gap: 8px; border-radius: 14px; box-shadow: 0 3px 0 rgba(0,0,0,0.15); }
-    .choice .num { width: 24px; height: 24px; font-size: 0.8rem; }
+    .choices { gap: 7px; }
+    .choice { padding: 11px 12px; font-size: 0.95rem; gap: 10px; border-radius: 14px; box-shadow: 0 3px 0 rgba(0,0,0,0.15); }
+    .choice .num { width: 26px; height: 26px; font-size: 0.85rem; }
     
     /* 타이핑 입력창 */
     .typing-input { padding: 10px; font-size: 1.1rem; margin-bottom: 6px; border-width: 3px; border-radius: 14px; }
