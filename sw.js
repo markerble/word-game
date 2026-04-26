@@ -1,39 +1,16 @@
-const CACHE_NAME = 'word-game-v5';
-const urlsToCache = [
-  './',
-  './index.html',
-  './manifest.webmanifest'
-];
-
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(urlsToCache).catch(()=>{});
-    })
-  );
+const CACHE_NAME = 'word-game-v6';
+const urlsToCache = ['./','./index.html','./manifest.webmanifest'];
+self.addEventListener('install', e=>{
+  e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(urlsToCache).catch(()=>{})));
   self.skipWaiting();
 });
-
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(names => {
-      return Promise.all(
-        names.filter(name => name !== CACHE_NAME)
-             .map(name => caches.delete(name))
-      );
-    }).then(()=>self.clients.claim())
-  );
+self.addEventListener('activate', e=>{
+  e.waitUntil(caches.keys().then(n=>Promise.all(n.filter(x=>x!==CACHE_NAME).map(x=>caches.delete(x)))).then(()=>self.clients.claim()));
 });
-
-self.addEventListener('fetch', event => {
-  if(event.request.method !== 'GET') return;
-  event.respondWith(
-    fetch(event.request).then(response => {
-      if(response && response.status === 200) {
-        const responseClone = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
-      }
-      return response;
-    }).catch(() => caches.match(event.request))
-  );
+self.addEventListener('fetch', e=>{
+  if(e.request.method!=='GET') return;
+  e.respondWith(fetch(e.request).then(r=>{
+    if(r&&r.status===200){const c=r.clone();caches.open(CACHE_NAME).then(ch=>ch.put(e.request,c));}
+    return r;
+  }).catch(()=>caches.match(e.request)));
 });

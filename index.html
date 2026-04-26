@@ -80,7 +80,7 @@
     position: relative;
     z-index: 1;
     height: 100%;
-    padding: 8px 12px 30px;
+    padding: 6px 12px 20px;
     max-width: 600px;
     margin: 0 auto;
     display: flex;
@@ -91,6 +91,10 @@
   .screen { display: none; flex-direction: column; flex: 1; min-height: 0; }
   .screen.active { display: flex; animation: fadeIn 0.4s ease; }
   
+  /* 메인 메뉴는 버튼이 화면 안에 다 들어가도록 */
+  #screen-menu { justify-content: flex-start; }
+  #screen-menu .btn { flex-shrink: 0; }
+  
   /* 게임 화면 - 보기는 적당한 사이즈로 고정 */
   #screen-quiz .choices { gap: 8px; }
   #screen-quiz .choices .choice { min-height: auto; }
@@ -99,15 +103,16 @@
   @media (max-width: 430px) {
     #app { padding: 10px 12px 16px; }
     
-    .title-card { padding: 15px 10px; margin-top: 0; }
-    .title-card h1 { font-size: 2.4rem; }
-    .title-card .subtitle { font-size: 1rem; }
-    .title-card .day-badge { font-size: 0.95rem; padding: 6px 16px; }
+    .title-card { padding: 8px 10px 5px; margin-top: 0; }
+    .title-card h1 { font-size: 1.9rem; }
+    .title-card .subtitle { font-size: 0.85rem; margin-top: 4px; }
+    .title-card .day-badge { font-size: 0.85rem; padding: 5px 14px; margin-top: 8px; }
     
-    .btn { padding: 16px; margin: 10px 0; font-size: 1.2rem; }
-    .btn .emoji { font-size: 1.6rem; margin-bottom: 2px; }
+    .btn { padding: 11px; margin: 6px 0; font-size: 1.05rem; border-radius: 18px; box-shadow: 0 5px 0 rgba(0,0,0,0.2), 0 8px 15px rgba(0,0,0,0.15); }
+    .btn .emoji { font-size: 1.3rem; margin-bottom: 0; display: inline; margin-right: 6px; }
     
-    .menu-info { padding: 10px; font-size: 0.85rem; margin: 10px 0; }
+    .menu-info { padding: 8px; font-size: 0.78rem; margin: 6px 0; line-height: 1.4; }
+    .menu-info br { display: none; }
     
     /* DAY 그리드 - 4열로 더 컴팩트 */
     .day-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
@@ -174,10 +179,10 @@
     }
     
     /* 게임 헤더 더 컴팩트하게 */
-    .game-header { padding: 7px 8px; margin-bottom: 8px; }
-    .stat .label { font-size: 0.6rem; }
-    .stat .value { font-size: 1rem; }
-    .progress-bar { height: 6px; margin-bottom: 8px; }
+    .game-header { padding: 6px 8px; margin-bottom: 6px; }
+    .stat .label { font-size: 0.6rem; opacity: 0.85; }
+    .stat .value { font-size: 0.95rem; }
+    .progress-bar { height: 5px; margin-bottom: 6px; }
     
     /* 질문 카드 압축 */
     .question-card { padding: 10px 12px; margin-bottom: 8px; border-radius: 16px; border-width: 2px; }
@@ -186,9 +191,9 @@
     .pronunciation { font-size: 0.75rem; margin-top: 2px; }
     
     /* 4지선다 보기 압축 */
-    .choices { gap: 7px; }
-    .choice { padding: 11px 12px; font-size: 0.95rem; gap: 10px; border-radius: 14px; box-shadow: 0 3px 0 rgba(0,0,0,0.15); }
-    .choice .num { width: 26px; height: 26px; font-size: 0.85rem; }
+    .choices { gap: 6px; }
+    .choice { padding: 10px 12px; font-size: 0.92rem; gap: 10px; border-radius: 14px; box-shadow: 0 3px 0 rgba(0,0,0,0.15); }
+    .choice .num { width: 24px; height: 24px; font-size: 0.8rem; }
     
     /* 타이핑 입력창 */
     .typing-input { padding: 10px; font-size: 1.1rem; margin-bottom: 6px; border-width: 3px; border-radius: 14px; }
@@ -196,13 +201,13 @@
     .hint-display { font-size: 0.85rem; padding: 5px 8px; min-height: 12px; letter-spacing: 3px; margin-top: 6px; }
     
     /* 피드백 영역 */
-    .feedback { font-size: 0.95rem; margin: 6px 0; min-height: 22px; }
-    .feedback .correct-answer { font-size: 0.88rem; padding: 6px 10px; border-radius: 10px; }
-    .feedback .correct-answer .pron { font-size: 0.75rem; }
-    .next-btn { padding: 11px; font-size: 1rem; border-radius: 14px; box-shadow: 0 4px 0 rgba(0,0,0,0.2); margin-top: 4px; }
+    .feedback { font-size: 0.85rem; margin: 5px 0; min-height: 0; line-height: 1.3; }
+    .feedback .correct-answer { font-size: 0.82rem; padding: 5px 10px; border-radius: 10px; margin-top: 4px; display: inline-block; }
+    .feedback .correct-answer .pron { font-size: 0.7rem; display: inline; margin-left: 5px; }
+    .next-btn { padding: 10px; font-size: 0.95rem; border-radius: 12px; box-shadow: 0 4px 0 rgba(0,0,0,0.2); margin-top: 4px; }
     
     /* 그만하기 버튼 */
-    .exit-btn { padding: 5px 10px; font-size: 0.78rem; margin-bottom: 6px; }
+    .exit-btn { padding: 4px 10px; font-size: 0.72rem; margin-bottom: 4px; }
     
     /* 콤보 표시 작게 */
     .combo { font-size: 3rem; }
@@ -875,7 +880,7 @@
 
   <!-- 메인 메뉴 -->
   <div class="screen active" id="screen-menu">
-    <button id="mute-btn" onclick="toggleMute()" style="position:absolute;top:8px;right:14px;background:rgba(255,255,255,0.25);border:2px solid rgba(255,255,255,0.4);color:white;width:42px;height:42px;border-radius:50%;font-size:1.2rem;cursor:pointer;z-index:10;">🔊</button>
+    <button id="mute-btn" onclick="toggleMute()" style="position:absolute;top:6px;right:10px;background:rgba(255,255,255,0.25);border:2px solid rgba(255,255,255,0.4);color:white;width:36px;height:36px;border-radius:50%;font-size:1.05rem;cursor:pointer;z-index:10;">🔊</button>
     <div class="title-card">
       <h1>영단어<br>챌린지!</h1>
       <div class="day-badge">📚 DAY 8 ~ 40 (990개 단어)</div>
