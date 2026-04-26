@@ -1,4 +1,4 @@
-const CACHE_NAME = 'word-game-v6';
+const CACHE_NAME = 'word-game-v7';
 const urlsToCache = ['./', './index.html', './manifest.webmanifest'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(urlsToCache).catch(()=>{})));

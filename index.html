@@ -90,14 +90,48 @@
   
   .screen { display: none; flex-direction: column; flex: 1; min-height: 0; }
   .screen.active { display: flex; animation: fadeIn 0.4s ease; }
+  /* 게임 화면들은 화면에 정확히 맞게 */
+  #screen-quiz.active, #screen-typing.active {
+    height: 100%;
+    max-height: 100%;
+  }
   
   /* 메인 메뉴는 버튼이 화면 안에 다 들어가도록 */
   #screen-menu { justify-content: flex-start; }
   #screen-menu .btn { flex-shrink: 0; }
   
-  /* 게임 화면 - 보기는 적당한 사이즈로 고정 */
-  #screen-quiz .choices { gap: 8px; }
-  #screen-quiz .choices .choice { min-height: auto; }
+  /* 게임 화면 레이아웃 - flex로 화면에 맞게 자동 조정 */
+  #screen-quiz, #screen-typing {
+    overflow: hidden;
+  }
+  /* progress-bar는 작게 고정 */
+  #screen-quiz .progress-bar, #screen-typing .progress-bar {
+    flex: 0 0 auto;
+  }
+  /* 질문 카드는 자기 크기만큼 */
+  #screen-quiz .question-card, #screen-typing .question-card {
+    flex: 0 0 auto;
+  }
+  /* 4지선다는 남은 공간 채우되, 각 보기는 화면에 맞게 자동 */
+  #screen-quiz .choices {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 0;
+  }
+  #screen-quiz .choices .choice {
+    flex: 1 1 0;
+    min-height: 38px;
+    max-height: 65px;
+  }
+  /* 타이핑 입력 영역 - 자기 크기만큼 */
+  #screen-typing .typing-input { flex: 0 0 auto; }
+  /* feedback 영역은 항상 보이도록 - 마지막 줄에 */
+  .feedback {
+    flex: 0 0 auto;
+    margin-top: auto !important;
+  }
   
   /* 모바일 (430px 이하 - 아이폰 15 Pro Max 포함) 화면 대응 */
   @media (max-width: 430px) {
