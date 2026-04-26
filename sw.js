@@ -1,4 +1,4 @@
-const CACHE_NAME = 'word-game-v3';  // 버전 변경하면 자동으로 캐시 갱신
+const CACHE_NAME = 'word-game-v4';
 const urlsToCache = [
   './',
   './index.html',
@@ -11,7 +11,7 @@ self.addEventListener('install', event => {
       return cache.addAll(urlsToCache).catch(()=>{});
     })
   );
-  self.skipWaiting();  // 즉시 활성화
+  self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
@@ -25,7 +25,6 @@ self.addEventListener('activate', event => {
   );
 });
 
-// 네트워크 우선, 실패 시 캐시 (업데이트 잘 받게)
 self.addEventListener('fetch', event => {
   if(event.request.method !== 'GET') return;
   event.respondWith(
