@@ -42,26 +42,17 @@
   }
   
   body {
-    /* iPhone 노치/홈인디케이터 영역 활용 */
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
-    min-height: 100vh;
-    min-height: 100dvh;
-    /* 게임 중 스크롤 방지 (메뉴 화면은 필요시 스크롤 허용) */
-    overflow: hidden;
-    position: fixed;
-    width: 100%;
-    height: 100%;
+    height: 100vh;
     height: 100dvh;
+    overflow: hidden;
   }
   
-  /* 메뉴/랭킹 화면은 스크롤 가능하게 (선택) */
-  body.allow-scroll {
-    overflow-y: auto;
-    position: relative;
-  }
+  /* 메뉴/랭킹 등은 스크롤 허용 */
+  body.allow-scroll { overflow-y: auto; }
   
   @keyframes bgShift {
     0%, 100% { background-position: 0% 50%; }
@@ -88,22 +79,21 @@
   #app {
     position: relative;
     z-index: 1;
-    min-height: 100vh;
-    min-height: 100dvh;
-    padding: 8px 12px 12px;
+    height: 100%;
+    padding: 8px 12px;
     max-width: 600px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
   }
   
-  /* 게임 화면(quiz, typing)에서는 콘텐츠가 화면에 딱 맞도록 */
-  .screen.active {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-  .screen:not(.active) { display: none; }
+  .screen { display: none; flex-direction: column; flex: 1; min-height: 0; }
+  .screen.active { display: flex; animation: fadeIn 0.4s ease; }
+  
+  /* 게임 화면 - 빈 공간을 보기/입력창이 채우도록 */
+  #screen-quiz .choices { flex: 1; align-content: stretch; }
+  #screen-quiz .choices .choice { flex: 1; min-height: 50px; }
   
   /* 모바일 (430px 이하 - 아이폰 15 Pro Max 포함) 화면 대응 */
   @media (max-width: 430px) {
@@ -885,6 +875,7 @@
 
   <!-- 메인 메뉴 -->
   <div class="screen active" id="screen-menu">
+    <button id="mute-btn" onclick="toggleMute()" style="position:absolute;top:8px;right:14px;background:rgba(255,255,255,0.25);border:2px solid rgba(255,255,255,0.4);color:white;width:42px;height:42px;border-radius:50%;font-size:1.2rem;cursor:pointer;z-index:10;">🔊</button>
     <div class="title-card">
       <h1>영단어<br>챌린지!</h1>
       <div class="day-badge">📚 DAY 8 ~ 40 (990개 단어)</div>
@@ -1059,40 +1050,64 @@ function makeStars() {
 makeStars();
 
 // ============ 사운드 ============
-let audioCtx;
-let audioReady = false;
-function getCtx(){
-  if(!audioCtx) {
-    try {
-      audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-    } catch(e) { return null; }
-  }
+// === iOS PWA 호환 오디오 시스템 ===
+let audioCtx = null;
+let audioUnlocked = false;
+let muted = false; // 음소거 토글
+
+function initAudio() {
+  if(audioCtx) return audioCtx;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if(!AC) return null;
+    audioCtx = new AC();
+  } catch(e) { return null; }
   return audioCtx;
 }
+
+// iOS는 사용자 인터랙션(click, touch) 핸들러 안에서 직접 오디오를 재생해야만 잠금 해제됨
 function unlockAudio() {
-  const ctx = getCtx();
+  if(audioUnlocked) return;
+  const ctx = initAudio();
+  if(!ctx) return;
+  
+  // resume + 즉시 무음 사운드 재생 (둘 다 해야 iOS 풀림)
+  if(ctx.state === 'suspended') ctx.resume();
+  
+  try {
+    const buf = ctx.createBuffer(1, 1, 22050);
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    src.connect(ctx.destination);
+    src.start(0);
+  } catch(e) {}
+  
+  // 동시에 무음 oscillator도
+  try {
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0, ctx.currentTime);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(0); o.stop(ctx.currentTime + 0.01);
+  } catch(e) {}
+  
+  audioUnlocked = true;
+  console.log('🔊 Audio unlocked');
+}
+
+function beep(freq, dur=0.1, type='sine', vol=0.2) {
+  if(muted) return;
+  const ctx = initAudio();
   if(!ctx) return;
   if(ctx.state === 'suspended') {
-    ctx.resume().then(()=>{
-      audioReady = true;
-      // 무음 비프 한 번 재생해서 iOS 오디오 잠금 해제
-      try {
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
-        g.gain.value = 0;
-        o.connect(g); g.connect(ctx.destination);
-        o.start(); o.stop(ctx.currentTime + 0.001);
-      } catch(e) {}
-    }).catch(()=>{});
+    ctx.resume().then(()=>doBeep(ctx, freq, dur, type, vol)).catch(()=>{});
   } else {
-    audioReady = true;
+    doBeep(ctx, freq, dur, type, vol);
   }
 }
-function beep(freq, dur=0.1, type='sine', vol=0.2) {
+
+function doBeep(ctx, freq, dur, type, vol) {
   try {
-    const ctx = getCtx();
-    if(!ctx) return;
-    if(ctx.state === 'suspended') ctx.resume();
     const o = ctx.createOscillator();
     const g = ctx.createGain();
     o.type = type; o.frequency.value = freq;
@@ -1149,6 +1164,29 @@ function showCombo(text) {
 }
 
 // ============ 화면 전환 ============
+function toggleMute() {
+  muted = !muted;
+  const btn = document.getElementById('mute-btn');
+  if(btn) btn.textContent = muted ? '🔇' : '🔊';
+  if(!muted) {
+    unlockAudio();
+    // 테스트 사운드
+    setTimeout(()=>beep(800, 0.1, 'sine', 0.2), 50);
+  }
+  try { localStorage.setItem('muted', muted ? '1' : '0'); } catch(e) {}
+}
+
+// 페이지 로드 시 음소거 상태 복원
+try {
+  if(localStorage.getItem('muted') === '1') {
+    muted = true;
+    setTimeout(()=>{
+      const btn = document.getElementById('mute-btn');
+      if(btn) btn.textContent = '🔇';
+    }, 100);
+  }
+} catch(e) {}
+
 function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+name).classList.add('active');
